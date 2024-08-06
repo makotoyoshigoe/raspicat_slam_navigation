@@ -61,14 +61,14 @@ def generate_launch_description():
         description='Set "true" to launch rviz.')
     declare_map_yaml = DeclareLaunchArgument(
         'map', default_value=os.path.join(
-            get_package_share_directory('raspicat_slam'),
-                'config', 'maps', 'iscas_museum_map.yaml'),
+            get_package_share_directory('nav2_mypkg'),
+                'config', 'map', 'tsudanuma_2_19', 'localization', 'map_tsudanuma_2_19.yaml'),
                 description='Full path to map yaml file to load')
     declare_params_file = DeclareLaunchArgument(
         'params_file',
         default_value=os.path.join(
             get_package_share_directory('raspicat_navigation'),
-                'config', 'param', 'nav2.param.yaml'),
+                'config', 'param', 'emcl2_nav2.param.yaml'),
                 description='Full path to the ROS2 parameters file to use for all launched nodes')
     declare_container_name = DeclareLaunchArgument(
         'container_name', default_value='nav2_container',
@@ -94,7 +94,6 @@ def generate_launch_description():
     
     lifecycle_nodes = [
         'map_server',
-        'amcl',
         'controller_server',
         'smoother_server',
         'planner_server',
@@ -120,15 +119,15 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
             Node(
-                package='nav2_amcl',
-                executable='amcl',
-                name='amcl',
+                package='emcl2',
+                executable='emcl2_node',
+                name='emcl2',
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
                 arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings),
+                remappings=remappings+[('map/localization', '/map')]),
             Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',
@@ -230,12 +229,12 @@ def generate_launch_description():
                 name='map_server',
                 parameters=[configured_params],
                 remappings=remappings),
-            ComposableNode(
-                package='nav2_amcl',
-                plugin='nav2_amcl::AmclNode',
-                name='amcl',
-                parameters=[configured_params],
-                remappings=remappings),
+            # ComposableNode(
+            #     package='nav2_amcl',
+            #     plugin='nav2_amcl::AmclNode',
+            #     name='amcl',
+            #     parameters=[configured_params],
+            #     remappings=remappings),
             ComposableNode(
                 package='nav2_lifecycle_manager',
                 plugin='nav2_lifecycle_manager::LifecycleManager',
