@@ -35,7 +35,8 @@ def generate_launch_description():
     use_composition = LaunchConfiguration('use_composition')
     use_rviz = LaunchConfiguration('use_rviz')
     autostart = LaunchConfiguration('autostart')
-    map_yaml_file = LaunchConfiguration('map')
+    loc_map_yaml_file = LaunchConfiguration('loc_map')
+    nav_map_yaml_file = LaunchConfiguration('nav_map')
     params_file = LaunchConfiguration('params_file')
     container_name = LaunchConfiguration('container_name')
     use_respawn = LaunchConfiguration('use_respawn')
@@ -59,16 +60,21 @@ def generate_launch_description():
         'use_rviz',
         default_value='true',
         description='Set "true" to launch rviz.')
-    declare_map_yaml = DeclareLaunchArgument(
-        'map', default_value=os.path.join(
-            get_package_share_directory('nav2_mypkg'),
+    declare_loc_map_yaml = DeclareLaunchArgument(
+        'loc_map', default_value=os.path.join(
+            get_package_share_directory('raspicat_navigation'),
                 'config', 'map', 'tsudanuma_2_19', 'localization', 'map_tsudanuma_2_19.yaml'),
-                description='Full path to map yaml file to load')
+                description='Full path to map yaml file for localization to load')
+    declare_nav_map_yaml = DeclareLaunchArgument(
+        'nav_map', default_value=os.path.join(
+            get_package_share_directory('raspicat_navigation'),
+                'config', 'map', 'tsudanuma_2_19', 'navigation', 'map_tsudanuma_2_19.yaml'),
+                description='Full path to map yaml file for navigation to load')
     declare_params_file = DeclareLaunchArgument(
         'params_file',
         default_value=os.path.join(
             get_package_share_directory('raspicat_navigation'),
-                'config', 'param', 'nav2.param.yaml'),
+                'config', 'param', 'sep_emcl2_nav2.param.yaml'),
                 description='Full path to the ROS2 parameters file to use for all launched nodes')
     declare_container_name = DeclareLaunchArgument(
         'container_name', default_value='nav2_container',
@@ -83,8 +89,9 @@ def generate_launch_description():
     container_name_full = (namespace, '/', container_name)
 
     param_substitutions = {
-        'use_sim_time': use_sim_time,
-        'yaml_filename': map_yaml_file}
+        'use_sim_time': use_sim_time,}
+        # 'loc_map_yaml_filename': loc_map_yaml_file, 
+        # 'nav_map_yaml_filename': nav_map_yaml_file}
     
     configured_params = RewrittenYaml(
         source_file=params_file,
@@ -93,7 +100,8 @@ def generate_launch_description():
         convert_types=True)
     
     lifecycle_nodes = [
-        'map_server',
+        'loc_map_server',
+        'nav_map_server',
         'controller_server',
         'smoother_server',
         'planner_server',
@@ -111,13 +119,23 @@ def generate_launch_description():
             Node(
                 package='nav2_map_server',
                 executable='map_server',
-                name='map_server',
+                name='loc_map_server',
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
-                parameters=[configured_params],
+                parameters=[configured_params, {"yaml_filename": loc_map_yaml_file}],
                 arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings),
+                remappings=remappings+[('map', '/map/localization')]),
+            Node(
+                package='nav2_map_server',
+                executable='map_server',
+                name='nav_map_server',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[configured_params, {"yaml_filename": nav_map_yaml_file}],
+                arguments=['--ros-args', '--log-level', log_level],
+                remappings=remappings+[('map', '/map')]),
             Node(
                 package='emcl2',
                 executable='emcl2_node',
@@ -127,7 +145,7 @@ def generate_launch_description():
                 respawn_delay=2.0,
                 parameters=[configured_params],
                 arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings+[('map/localization', '/map')]),
+                remappings=remappings+[('map', '/map/localization')]),
             Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',
@@ -226,15 +244,15 @@ def generate_launch_description():
             ComposableNode(
                 package='nav2_map_server',
                 plugin='nav2_map_server::MapServer',
-                name='map_server',
+                name='loc_map_server',
                 parameters=[configured_params],
-                remappings=remappings),
-            # ComposableNode(
-            #     package='nav2_amcl',
-            #     plugin='nav2_amcl::AmclNode',
-            #     name='amcl',
-            #     parameters=[configured_params],
-            #     remappings=remappings),
+                remappings=remappings+[('map', '/map/localization')]),
+            ComposableNode(
+                package='nav2_map_server',
+                plugin='nav2_map_server::MapServer',
+                name='nav_map_server',
+                parameters=[configured_params],
+                remappings=remappings+[('map', '/map')]),
             ComposableNode(
                 package='nav2_lifecycle_manager',
                 plugin='nav2_lifecycle_manager::LifecycleManager',
@@ -307,7 +325,8 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     ld.add_action(declare_namespace)
-    ld.add_action(declare_map_yaml)
+    ld.add_action(declare_loc_map_yaml)
+    ld.add_action(declare_nav_map_yaml)
     ld.add_action(declare_use_sim_time)
     ld.add_action(declare_params_file)
     ld.add_action(declare_autostart)

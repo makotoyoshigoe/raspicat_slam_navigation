@@ -264,10 +264,15 @@ global_costmap:
     ros__parameters:
       use_sim_time: False
 
-map_server:
+loc_map_server:
   ros__parameters:
     use_sim_time: False
-    yaml_filename: "map.yaml"
+    # yaml_filename: "map.yaml"
+
+nav_map_server:
+  ros__parameters:
+    use_sim_time: False
+    # yaml_filename: "map.yaml"
 
 planner_server:
   ros__parameters:
