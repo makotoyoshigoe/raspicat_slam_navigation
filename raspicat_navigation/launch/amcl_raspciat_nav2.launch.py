@@ -61,7 +61,7 @@ def generate_launch_description():
         description='Set "true" to launch rviz.')
     declare_map_yaml = DeclareLaunchArgument(
         'map', default_value=os.path.join(
-            get_package_share_directory('nav2_mypkg'),
+            get_package_share_directory('raspicat_navigation'),
                 'config', 'map', 'tsudanuma_2_19', 'localization', 'map_tsudanuma_2_19.yaml'),
                 description='Full path to map yaml file to load')
     declare_params_file = DeclareLaunchArgument(
