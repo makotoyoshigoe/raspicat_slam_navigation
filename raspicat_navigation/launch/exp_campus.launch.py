@@ -161,7 +161,7 @@ def generate_launch_description():
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
+                # arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings+[('map', '/map/localization')]),
             Node(
                 package='nav2_lifecycle_manager',
@@ -220,7 +220,7 @@ def generate_launch_description():
                 respawn_delay=2.0,
                 parameters=[configured_params],
                 arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings),
+                remappings=remappings+[('/goal_pose', 'goal_pose/fake')]),
             Node(
                 package='nav2_waypoint_follower',
                 executable='waypoint_follower',
@@ -335,8 +335,9 @@ def generate_launch_description():
     rviz2 = Node(package='rviz2',
         executable='rviz2',
         name='rviz2',
-        output='log',
+        output='screen',
         arguments=['-d', rviz_config_file],
+        ros_arguments=['--log-level', 'WARN'],
         condition=IfCondition(use_rviz))
 
     ld = LaunchDescription()
