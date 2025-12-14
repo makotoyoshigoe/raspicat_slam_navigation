@@ -93,7 +93,7 @@ def generate_launch_description():
         'use_respawn', default_value='False',
         description='Whether to respawn if a node crashes. Applied when composition is disabled.')
     declare_log_level = DeclareLaunchArgument(
-        'log_level', default_value='fatal',
+        'log_level', default_value='info',
         description='log level')
     declare_use_wall_tracking = DeclareLaunchArgument(
         'use_wall_tracking', default_value='false', 
@@ -143,26 +143,6 @@ def generate_launch_description():
                 parameters=[gnss2map_params_file],
                 arguments=['--ros-args', '--log-level', log_level]),
             Node(
-                condition=IfCondition(use_wall_tracking), 
-                package="wall_tracking_executor", 
-                executable="wall_tracking_node", 
-                name="wall_tracking_node", 
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', 'info']),
-            Node(
-                package='nav2_map_server',
-                executable='map_server',
-                name='loc_map_server',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params, {"yaml_filename": loc_map_yaml_file}],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings+[('map', '/map/localization')]),
-            Node(
                 package='nav2_map_server',
                 executable='map_server',
                 name='nav_map_server',
@@ -173,35 +153,13 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings+[('map', '/map')]),
             Node(
-                package='emcl2',
-                executable='emcl2_node',
-                name='emcl2',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params, {
-                    'use_gnss_reset': use_gnss,
-                    'use_wall_tracking': use_wall_tracking, 
-                    'use_gnss_yaw': use_gnss_yaw}],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings+[('map', '/map/localization')]),
-            #Node(
-            #    package='nav2_lifecycle_manager',
-            #    executable='lifecycle_manager',
-            #    name='lifecycle_manager_localization',
-            #    output='screen',
-            #    arguments=['--ros-args', '--log-level', log_level],
-            #    parameters=[{'use_sim_time': use_sim_time},
-            #                {'autostart': autostart},
-            #                {'node_names': lifecycle_nodes}]),
-            Node(
                 package='nav2_controller',
                 executable='controller_server',
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', 'info'],
+                arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings + [('cmd_vel', 'cmd_vel_nav')]),
             Node(
                 package='nav2_smoother',
@@ -283,22 +241,9 @@ def generate_launch_description():
             ComposableNode(
                 package='nav2_map_server',
                 plugin='nav2_map_server::MapServer',
-                name='loc_map_server',
-                parameters=[configured_params],
-                remappings=remappings+[('map', '/map/localization')]),
-            ComposableNode(
-                package='nav2_map_server',
-                plugin='nav2_map_server::MapServer',
                 name='nav_map_server',
                 parameters=[configured_params],
-                remappings=remappings+[('map', '/map')]),
-            #ComposableNode(
-            #    package='nav2_lifecycle_manager',
-            #    plugin='nav2_lifecycle_manager::LifecycleManager',
-            #    name='lifecycle_manager_localization',
-            #    parameters=[{'use_sim_time': use_sim_time,
-            #                 'autostart': autostart,
-            #                 'node_names': lifecycle_nodes}]),
+                remappings=remappings+[('map', '/map')]), 
             ComposableNode(
                 package='nav2_controller',
                 plugin='nav2_controller::ControllerServer',

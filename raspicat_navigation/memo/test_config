@@ -1,0 +1,35 @@
+# tsudanuma_campus_w_wt.launch.py
+	# | パラメータ名  | 想定 | dump | 
+	# | gnss_reset 	  | true | true |       
+	# | gnss_yaw      | true | true |
+	# | wall_tracking | true | true |    
+	# OK
+
+# tsudanuma_campus_only_gr.launch.py
+	# | パラメータ名  | 想定 | dump | 
+	# | gnss_reset 	  | true | true	|       
+	# | gnss_yaw      | true | true |
+	# | wall_tracking | false| false|    
+	# OK
+
+# tsudanuma_campus_w_wt_wo_gnss_yaw.launch.py
+	# | パラメータ名  | 想定 | dump | 
+	# | gnss_reset 	  | true | true	|       
+	# | gnss_yaw      | false| false|
+	# | wall_tracking | true | true	|    
+	# OK
+
+# tsudanuma_campus_only_gr_wo_gnss_yaw.launch.py
+	# | パラメータ名  | 想定 | dump | 
+	# | gnss_reset 	  | true | true	|       
+	# | gnss_yaw      | false| false|
+	# | wall_tracking | false| false|    
+	# OK
+
+# tsudanuma_campus.launch.py
+	# | パラメータ名  | 想定 | dump | 
+	# | gnss_reset 	  | false| false|       
+	# | gnss_yaw      | false| false|
+	# | wall_tracking | false| false|    
+	# OK
+

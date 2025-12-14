@@ -14,12 +14,14 @@ def generate_launch_description():
     param_dir = os.path.join(config_dir, 'param')
     map_dir = os.path.join(config_dir, 'map', 'tsudanuma_campus')
 
+    emcl2_params_path = os.path.join(
+            param_dir, 'emcl2.param.yaml')
     nav2_params_path = os.path.join(
             param_dir, 'nav2.param.yaml')
     gnss2map_params_path = os.path.join(
             param_dir, 'gnss_tsudanuma.param.yaml')
     wall_tracking_params_path = os.path.join(
-            param_dir, 'wall_tracking_executor.param.yaml')
+        param_dir, 'wall_tracking_executor.param.yaml')
     loc_map_path = os.path.join(
             map_dir, 'localization', 'map_tsudanuma_campus.yaml')
     nav_map_path = os.path.join(
@@ -28,7 +30,7 @@ def generate_launch_description():
     use_sim_time = 'False'
     use_rviz = 'true'
     use_wall_tracking = 'false'
-    use_gnss = 'false'
+    use_gnss = 'true'
     use_gnss_yaw = 'false'
 
     launch = IncludeLaunchDescription(
