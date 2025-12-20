@@ -40,7 +40,7 @@ def generate_launch_description():
     emcl2_params_file = LaunchConfiguration('emcl2_params_file')
     nav2_params_file = LaunchConfiguration('nav2_params_file')
     gnss2map_params_file = LaunchConfiguration('gnss2map_params_file')
-    wall_tracking_prams_file = LaunchConfiguration('wall_tracking_params_file')
+    wall_tracking_params_file = LaunchConfiguration('wall_tracking_params_file')
     container_name = LaunchConfiguration('container_name')
     use_respawn = LaunchConfiguration('use_respawn')
     log_level = LaunchConfiguration('log_level')
@@ -150,7 +150,8 @@ def generate_launch_description():
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
-                parameters=[configured_params],
+                # parameters=[configured_params],
+                parameters=[wall_tracking_params_file],
                 arguments=['--ros-args', '--log-level', 'info']),
             Node(
                 package='nav2_map_server',
@@ -179,21 +180,12 @@ def generate_launch_description():
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
-                parameters=[configured_params, {
+                parameters=[emcl2_params_file, {
                     'use_gnss_reset': use_gnss,
                     'use_wall_tracking': use_wall_tracking, 
                     'use_gnss_yaw': use_gnss_yaw}],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings+[('map', '/map/localization')]),
-            #Node(
-            #    package='nav2_lifecycle_manager',
-            #    executable='lifecycle_manager',
-            #    name='lifecycle_manager_localization',
-            #    output='screen',
-            #    arguments=['--ros-args', '--log-level', log_level],
-            #    parameters=[{'use_sim_time': use_sim_time},
-            #                {'autostart': autostart},
-            #                {'node_names': lifecycle_nodes}]),
             Node(
                 package='nav2_controller',
                 executable='controller_server',

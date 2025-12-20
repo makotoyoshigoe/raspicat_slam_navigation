@@ -26,6 +26,7 @@ def generate_launch_description():
             map_dir, 'navigation', 'map_tsudanuma_campus.yaml')
 
     use_sim_time = 'True'
+    #use_sim_time = 'False'
     use_rviz = 'true'
     use_wall_tracking = 'true'
     use_gnss = 'true'

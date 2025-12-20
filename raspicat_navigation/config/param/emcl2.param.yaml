@@ -21,12 +21,12 @@ emcl2:
     extraction_rate: 0.1
     range_threshold: 0.3
     sensor_reset: false
-    odom_fw_dev_per_fw: 0.2
-    odom_fw_dev_per_rot: 0.2
+    odom_fw_dev_per_fw: 0.19
+    odom_fw_dev_per_rot: 0.0001
     odom_rot_dev_per_fw: 0.13
-    odom_rot_dev_per_rot: 0.05
-    laser_likelihood_max_dist: 1.0
-    use_gnss_reset: false 
+    odom_rot_dev_per_rot: 0.2
+    laser_likelihood_max_dist: 0.3
+    use_gnss_reset: true 
     use_wall_tracking: false 
     use_gnss_yaw: false
     gnss_reset_var: 6.0
